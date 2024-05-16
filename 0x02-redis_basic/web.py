@@ -32,7 +32,12 @@ def data_cacher(method: Callable) -> Callable:
 
 @data_cacher
 def get_page(url: str) -> str:
-    '''Returns the content of a URL after caching the request's response,
-    and tracking the request.
-    '''
-    return requests.get(url).text
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for unsuccessful requests
+        return response.text
+    except requests.exceptions.RequestException as e:
+        # Handle exceptions (e.g., network errors, server errors)
+        # You can log the error, return a specific error message, or retry the request
+        print(f"Error fetching data for URL {url}: {e}")
+        return None
